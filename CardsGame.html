@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="Cards.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="alert/dist/sweetalert.css"> -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+<body>
+    <div class="game" style="text-align: center;">
+        <h2>IT'S TIME TO DUEL !!!</h2>
+        <h4 id="level">LV 1</h4>
+        <button class="btn btn-success" onclick="reset()">Reset</button>
+        <h5 id="lives">Lives : 5</h5>
+        <div class="container ">
+            <div class="m-auto bg-white"  id="container"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+<script>
+    let arrImg
+    let game = document.getElementById("container")
+    let arrBox = game.children
+    let arrNum = []
+    let lives = document.getElementById("lives")
+    let countlives = 5
+    let points = 0
+    window.onload = createBox(3 , 2)
+    function createBox(cols , rows) {
+        game.setAttribute("style", `width : ${cols * 161}px;`)
+        arrImg = new Array(cols * rows)
+        for(let i = 0; i < cols * rows; i ++) {
+            arrNum.push(i)
+            let makeDiv = document.createElement("div")
+            makeDiv.setAttribute("class", "game-card float rounded")
+            let myImageOuter = new Image()
+            myImageOuter.src = 'bia.jpg'
+            myImageOuter.setAttribute("class", "bia")
+            myImageOuter.setAttribute("id", `${i}`)
+            myImageOuter.setAttribute("onclick", `flip(${i}, ${cols}, ${rows})`)
+            makeDiv.appendChild(myImageOuter)
+            game.appendChild(makeDiv)
+        }
+        for (let i = arrNum.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * i)
+            let k = arrNum[i]
+            arrNum[i] = arrNum[j]
+            arrNum[j] = k
+        }
+        console.log(arrNum)
+        let h = 0
+        let k = 1
+        if(rows == 2) {
+            for (let i = 0; i < cols * rows; i++) {
+                let myImage
+                if (h < 2) {
+                    myImage = `./Image/catImage/cat${k}.jpg`
+                    arrImg[i] = myImage
+                    h += 1
+                } else {
+                    h = 1
+                    if(k == 21) {
+                        k = 1
+                    } else {
+                        k += 1
+                    }
+                    myImage = `./Image/catImage/cat${k}.jpg`
+                    arrImg[i] = myImage
+                }
+            }
+        } else {
+            for(let i = 0; i < cols * rows; i ++) {
+                let myImage
+                if (h < rows) {
+                    myImage = `./Image/catImage/cat${k}.jpg`
+                    arrImg[i] = myImage
+                    h += 1
+                } else {
+                    h = 1
+                    if (k == 21) {
+                        k = 1
+                    } else {
+                        k += 1
+                    }
+                    myImage = `./Image/catImage/cat${k}.jpg`
+                    arrImg[i] = myImage
+                }
+            }
+        }
+    }
+    let role = 0
+    let getToWin = []
+    let repeat = []
+    let stopP = 0
+    let checkWinner = 0
+    let level = document.getElementById("level")
+    let increase = 1
+    function flip(x, cols, rows) {
+        console.log(arrNum)
+        if(stopP < 2){
+            if(!repeat.includes(x)) {
+                arrBox[x].setAttribute("class", "game-card animation")
+                setTimeout(function() {
+                    arrBox[x].firstChild.src = arrImg[arrNum[x]]
+                    arrBox[x].setAttribute("class", "game-card banimation")
+                    repeat.push(x)
+                    stopP += 1
+                    role += 1
+                    getToWin.push(arrBox[x])
+                    if (role == 2) {
+                        console.log(getToWin[0].firstChild.src, getToWin[1].firstChild.src)
+                        if (getToWin[0].firstChild.src == getToWin[1].firstChild.src) {
+                            getToWin[0].setAttribute("class", "noclick game-card")
+                            getToWin[1].setAttribute("class", "noclick game-card")
+                            checkWinner += 1
+                            stopP = 0
+                            role = 0
+                            getToWin.length = 0
+                            repeat.length = 0
+                            points += 10
+                        } else {
+                            setTimeout(function () {
+                                getToWin[0].firstChild.src = 'bia.jpg'
+                                getToWin[1].firstChild.src = 'bia.jpg'
+                                stopP = 0
+                                role = 0
+                                getToWin.length = 0
+                                repeat.length = 0
+                                countlives = countlives - 1
+                                if (countlives == 0) {
+                                    swal({
+                                        title: "Game Over!",
+                                        text: `Your points : ${points}`,
+                                        button: "Reset"
+                                    });
+                                    reset()
+                                } else {
+                                    lives.innerHTML = `Lives : ${countlives}`
+                                }
+                            }, 1000)
+                        }
+                    }
+                    if (rows == 2 && cols % 2 == 0 && checkWinner == cols) {
+                        rows = cols
+                        increase += 1
+                        level.innerHTML = `LV ${increase}`
+                        setTimeout(reset(cols, rows), 1000)
+                    }
+                    console.log(rows, cols, checkWinner)
+                    if (rows == 2 && cols % 2 == 1 && checkWinner == cols) {
+                        cols += 1
+                        increase += 1
+                        level.innerHTML = `LV ${increase}`
+                        setTimeout(reset(cols, rows), 1000)
+                    }
+                    if (cols == rows && checkWinner == cols * 2) {
+                        rows = 2
+                        cols += 1
+                        increase += 1
+                        level.innerHTML = `LV ${increase}`
+                        setTimeout(reset(cols, rows), 1000)
+                    }
+                }, 100)
+                
+            } else {
+                return
+            }
+        } else {
+            return
+        }
+    }
+    function reset(cols, rows) {
+        removeAllChildNodes(game)
+        role = 0
+        getToWin = []
+        repeat = []
+        stopP = 0
+        checkWinner = 0
+        arrNum = []
+        arrImg = undefined  
+        if (rows == undefined && cols == undefined) {
+            points = 0
+            createBox(3, 2)
+            level.innerHTML = "LV 1"
+            increase = 1
+            countlives = 5
+            lives.innerHTML = `Lives : 5`
+        } else {
+            createBox(cols, rows)
+            countlives = 5 * increase
+            lives.innerHTML = `Lives : ${countlives}`
+        }
+    }
+    function removeAllChildNodes(parent) {
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild);
+            }
+    }
+</script>
+</html>

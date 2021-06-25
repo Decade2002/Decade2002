@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="XO.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="myChoice" class="pu">
+        <div class="pu-model">
+            <h3>FBI WARNING!</h3>
+            <hr>
+            <h5>YOU WILL NEVER WIN YOU STUPID BITCH ASS</h5>
+            <h5>YOU HAVE NO NIPPLES</h5>
+            <h5>SOLO YS ? :</h5>
+            <span>Please insert the size of your board :</span>
+            <input type="text" id="input">
+            <button onclick="createBox()">OK</button><br>
+            <span>Then choose your powers :</span><br>
+            <select name="choicez" id="playerchoice">
+                <option value="X">X</option>
+                <option value="O">O</option>
+            </select>
+        </div>
+    </div>
+    <div class="heheboizz">
+        <div id="game" class="app">
+        </div>
+    </div>
+</body>
+<script>
+    let popup = document.getElementById("myChoice")
+    //Gọi popup
+    window.onload = function(){
+        popup.style.display = "block"
+    }
+    let p1Choice = ""
+    let p2Choice = ""
+    let sect
+    let container1 = []
+    let container2 = []
+    function createBox() {
+        let c = document.getElementById("playerchoice").value
+        let input = document.getElementById("input").value
+        sect = parseInt(input)
+        for(let b = 0; b < sect; b ++) {
+            container1.push(new Array(sect).fill(0))
+            container2.push(new Array(sect).fill(0))
+        }
+        game.setAttribute("style", `width : ${25 * input}px`)
+        if(isNaN(input) || input == ""){
+            alert("Please insert only number")
+            let remake = function(){
+                popup.style.display = "block"
+            }
+            remake()
+        } else {
+            popup.style.display = "none"
+        }
+        let rows = 0, cols = 0
+        for(let i = 0; i < input * input; i ++) {
+            let makeDiv = document.createElement("div")
+            makeDiv.setAttribute("onclick", `takeTurn(${rows}, ${cols}, ${i})`)
+            makeDiv.setAttribute("class", "block")
+            makeDiv.setAttribute("style", `width : ${100/input}%`)
+            if(cols < input - 1) {
+                cols += 1
+            } else {
+                cols = 0
+                rows += 1
+            }
+            if(rows == cols == sect) {
+                return
+            }
+            game.appendChild(makeDiv)
+        }
+        playersChoice(c)
+    }
+    //Lựa chọn player
+    function playersChoice(random) {
+            p1Choice += random
+            if (p1Choice == "X") {
+                p2Choice += "O"
+            }
+            else {
+                p2Choice += "X"
+            }
+    }
+    let game = document.getElementById("game")
+    let arrBox = game.children
+    let playerTurn = true
+    let done = []
+    //đổi lượt người chơi
+    function takeTurn(rows, cols, x) {
+        if (playerTurn) {
+            if (!done.includes(x)) {
+                done.push(x)
+                p1Select(rows, cols, x)
+                playerTurn = false
+            } else { return }
+        } else {
+            if (!done.includes(x)) {
+                done.push(x)
+                p2Select(rows, cols, x)
+                playerTurn = true
+            } else { return }
+        }
+    }
+    //Lượt player 1
+    function p1Select(rows, cols, x) {
+        //Điền vào block X hay O
+        container1[rows][cols] += 1
+        console.log(container1)
+        let boxString = ''
+        boxString += p1Choice
+        arrBox[x].innerHTML = boxString
+        checkWinner(rows, cols, 1)
+    }
+    //Lượt player 2
+    function p2Select(rows, cols, x) {
+        //Điền vào block X hay O
+        container2[rows][cols] += 1
+        console.log(container2)
+        let boxString = ''
+        boxString += p2Choice
+        arrBox[x].innerHTML = boxString
+        checkWinner(rows, cols, 2)
+    }
+    //Check Winner
+    function checkWinner(rows, cols, p) {
+        let isWon = false
+        if(p == 1) {
+            //checkRows
+            let checkState = 0
+            for(let i = 0; i < container1.length; i ++) {
+                if(container1[rows][i] == 0) {
+                    checkState = 0
+                }
+                if(container1[rows][i] == 1) {
+                    checkState += 1
+                }
+                if (checkState > 4) {
+                    isWon = true
+                    break
+                }
+            }
+            checkState = 0
+            //checkCols
+            if(!isWon) {
+                for(let i = 0; i < container1.length; i ++) {
+                    if(container1[i][cols] == 0) {
+                        checkState = 0
+                    }
+                    if(container1[i][cols] == 1) {
+                        checkState += 1
+                    }
+                    if(checkState > 4) {
+                        isWon = true
+                        break
+                    }
+                }
+            }
+            checkState = 0
+            //checkDias
+            if(!isWon) {
+                for(let i = 1;i < container1.length; i ++) {
+                    if(rows - i < 0 || cols - i < 0) {
+                        break
+                    }
+                    if(container1[rows - i][cols - i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                for(let i = 0; i < container1.length; i ++) {
+                    if(rows + i == container1.length || cols + i == container1.length) {
+                        break
+                    }
+                    if(container1[rows + i][cols + i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                if(checkState > 4) {
+                    isWon = true
+                }
+            }
+            checkState = 0
+            //checkOpdias
+            if(!isWon) {
+                for(let i = 1; i < container1.length; i ++) {
+                    if(rows - i < 0 || cols + i == container1.length) {
+                        break
+                    }
+                    if(container1[rows - i][cols + i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                for(let i = 0; i < container1.length; i ++) {
+                    if(rows + i == container1.length || cols - i < 0) {
+                        break
+                    }
+                    if(container1[rows + i][cols - i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                if(checkState > 4) {
+                    isWon = true
+                }
+            }
+            if (isWon) {
+                alert("Player 1 has won")
+                setTimeout(reset, 1000)
+            }
+        } else {
+            //checkRows
+            checkState = 0
+            for (let i = 0; i < container2.length; i++) {
+                if (container2[rows][i] == 0) {
+                    checkState = 0
+                }
+                if (container2[rows][i] == 1) {
+                    checkState += 1
+                }
+                if (checkState > 4) {
+                    isWon = true
+                    break
+                }
+            }
+            checkState = 0
+            //checkCols
+            if (!isWon) {
+                for (let i = 0; i < container2.length; i++) {
+                    if (container2[i][cols] == 0) {
+                        checkState = 0
+                    }
+                    if (container2[i][cols] == 1) {
+                        checkState += 1
+                    }
+                    if (checkState > 4) {
+                        isWon = true
+                        break
+                    }
+                }
+            }
+            checkState = 0
+            //checkDias
+            if (!isWon) {
+                for (let i = 1; i < container2.length; i++) {
+                    if (rows - i < 0 || cols - i < 0) {
+                        break
+                    }
+                    if (container2[rows - i][cols - i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                for (let i = 0; i < container2.length; i++) {
+                    if (rows + i == container2.length || cols + i == container2.length) {
+                        break
+                    }
+                    if (container2[rows + i][cols + i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                if (checkState > 4) {
+                    isWon = true
+                }
+            }
+            checkState = 0
+            //checkOpdias
+            if (!isWon) {
+                for (let i = 1; i < container2.length; i++) {
+                    if (rows - i < 0 || cols + i == container2.length) {
+                        break
+                    }
+                    if (container2[rows - i][cols + i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                for (let i = 0; i < container2.length; i++) {
+                    if (rows + i == container2.length || cols - i < 0) {
+                        break
+                    }
+                    if (container2[rows + i][cols - i] == 1) {
+                        checkState += 1
+                    } else {
+                        break
+                    }
+                }
+                if (checkState > 4) {
+                    isWon = true
+                }
+            }
+            if (isWon) {
+                alert("Player 2 has won")
+                setTimeout(reset, 1000)
+            }
+        }
+        //Nếu max field
+        if (done.length == sect * sect) {
+            alert("2 thg ngu vai ca lon")
+            setTimeout(reset, 1000)
+        }
+    }
+    //reset game
+    function reset() {
+        for (let i = 0; i < arrBox.length; i++) {
+            arrBox[i].innerHTML = ""
+        }
+        container1 = []
+        container2 = []
+        for (let b = 0; b < sect; b++) {
+            container1.push(new Array(sect).fill(0))
+            container2.push(new Array(sect).fill(0))
+        }
+        playerTurn = true
+        done = []
+    }
+    
+</script>
+</html>

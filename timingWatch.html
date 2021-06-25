@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Stop Watch</h1>
+        <h2>checkTimeRunningS STOPWATCH</h2>
+    </div>
+    <div>
+        <p><span id="second">00:00</span></p>
+    </div>
+    <div>
+        <button id="startBtn" onclick="startCounting()">Start</button>
+        <button id="stopBtn" onclick="stopCounting()">Stop</button>
+        <button id="resetBtn" onclick="resetCounting()">Reset</button>
+    </div>
+</body>
+<script>
+    let checkTimeRunning = 0
+    let time = 0, xTime 
+    let span = document.getElementById("second")
+    let s = document.getElementById("startBtn")
+    let st = document.getElementById("stopBtn")
+    let r = document.getElementById("resetBtn")
+    function showTime() {
+        time += 1
+        span.innerHTML = counting(time)
+        console.log(xTime)
+    }
+    function counting(time) {
+        let sec = Math.floor(time / 100)
+        let tic = time - sec * 100
+        sec = `${sec}`.padStart(2, '0')
+        tic = `${tic}`.padStart(2, '0')
+        return `${sec}:${tic}`
+        showTime()
+    }
+    function startCounting() {
+        if(checkTimeRunning == 0) {
+            xTime = setInterval(showTime, 10)
+            checkTimeRunning = 1
+        }
+    }
+    function stopCounting() {
+        if(xTime && checkTimeRunning == 1) {
+            clearInterval(xTime)
+            xTime = null
+            checkTimeRunning = 0
+        }
+    }
+    function resetCounting() {
+        clearInterval(xTime)
+        xTime = null
+        checkTimeRunning = 0
+        time = 0
+        span.innerHTML = counting(time)
+    }
+</script>
+</html>

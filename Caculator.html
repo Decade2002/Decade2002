@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        table, th, td {
+            text-align: center;
+            border: 1px solid darkmagenta;
+        }
+        th, td {
+            cursor: pointer;
+        }
+        td:active{
+            background:burlywood;
+        }
+        th:active{
+            background: burlywood;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <div>
+            <table style="width: 20%;">
+                <tr>
+                    <th id="outPut" colspan="4" style="padding: 30px; text-align: end;"></th>
+                </tr>
+                <tr>
+                    <th onclick="addCal('+')" id="plus">+</th>
+                    <th onclick="addCal('-')" id="minus">-</th>
+                    <th onclick="addCal('*')" id="sub">*</th>
+                    <th onclick="addCal('/')" id="seq">/</th>
+                </tr>
+                <tr>
+                    <td onclick="addNumber('1')" >1</td>
+                    <td onclick="addNumber('2')" >2</td>
+                    <td onclick="addNumber('3')" >3</td>
+                    <td onclick="calculate()" id="equal" rowspan="4">=</td>
+                </tr>
+                <tr>
+                    <td onclick="addNumber('4')" >4</td>
+                    <td onclick="addNumber('5')" >5</td>
+                    <td onclick="addNumber('6')" >6</td>
+                </tr>
+                <tr>
+                    <td onclick="addNumber('7')" >7</td>
+                    <td onclick="addNumber('8')" >8</td>
+                    <td onclick="addNumber('9')" >9</td>
+                </tr>
+                <tr>
+                    <td onclick="addNumber('0')" >0</td>
+                    <td onclick="addNumber('.')" id="point">.</td>
+                    <td onclick="clearNumber()" id="clear">C</td>
+                </tr>
+            </table>
+        </div>
+</body>
+<script>
+    "use strict"
+    let arrMath = []
+    let isCalDone = true
+    let numString = ""
+    
+    function addNumber(val){
+        if (val === "." && numString.includes(".")) {
+            return
+        }
+        numString += val
+        if(val !== "." && numString.includes(".") == false){
+            numString = parseFloat(numString).toString()
+        }
+        
+        let lastValue = arrMath[arrMath.length - 1]
+
+        if(!isNaN(lastValue)){
+            arrMath[arrMath.length - 1] = numString
+        }else{
+            arrMath.push(numString)
+        }
+        showMath()
+    }
+
+    function showMath() {
+        if(!isCalDone) {
+            isCalDone = true
+            arrMath = []
+        }        
+        let out = arrMath.join("")
+        let op = document.getElementById("outPut")
+        op.innerHTML = out
+    }
+
+    function addCal(val) {
+        if(isNaN(arrMath[arrMath.length -1])) {return}
+        else{
+        arrMath.push(val)
+        numString = ""
+        showMath()}
+    }
+
+    function calculate(){
+        // arrMath = [eval(arrMath.join(""))]
+        let operation = ""
+        let total = 0
+        let cal
+        for(let i = 0; i < arrMath.length; i++) {
+            if(operation == "") {
+                operation += arrMath[i]
+            } 
+            if(operation != "") {
+                if(isNaN(Number(operation)) == false){
+                    if(total == 0){
+                        total = Number(operation)
+                        operation = ""
+                    }else{
+                        if (cal == "+") {
+                            total = total + Number(operation)
+                        }
+                        if (cal == "-") {
+                            total = total - Number(operation)
+                        }
+                        if (cal == "*") {
+                            total = total * Number(operation)
+                        }
+                        if (cal == "/") {
+                            total = total / Number(operation)
+                        }
+                        operation = ""
+                    }
+                }else{
+                    cal = operation
+                    operation = ""
+                }
+            }
+        }
+        arrMath = []
+        arrMath.push(total)
+        showMath()
+        
+    }
+    function clearNumber() {
+        arrMath = []
+        numString = ""
+        showMath()
+    }
+</script>
+</html>

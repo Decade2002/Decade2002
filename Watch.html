@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div>
+        <h1></h1>
+    </div>
+    <div>
+        <h1 id="hmmm">PM</h1>
+    </div>
+</body>
+<script>
+    function showTime() {
+        let date = new Date()
+        let hour = date.getHours()
+        let minute = date.getMinutes()
+        let second = date.getSeconds()
+        let noon = "AM"
+        let span = document.getElementById("hmmm")
+        if (hour >= 12) {
+            noon = "PM"
+            hour = hour - 12
+        }
+        if (hour < 10) {
+            hour = `0${hour}`
+        }
+        if (minute < 10) {
+            minute = `0${minute}`
+        }
+        if (second < 10) {
+            second = `0${second}`
+        }
+        span.innerHTML = hour + ":" + minute + ":" + second + " " + noon
+    }
+    setInterval(showTime, 1000)
+</script>
+
+</html>
